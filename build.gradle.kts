@@ -34,11 +34,16 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+    implementation("org.springframework.data:spring-data-envers")
+    implementation("org.springframework.boot:spring-boot-starter-hateoas")
+    implementation("net.lbruun.springboot:preliquibase-spring-boot-starter:1.6.1")
 	implementation("org.liquibase:liquibase-core")
+    implementation("org.springframework.modulith:spring-modulith-api:1.4.3")
+    implementation("org.springframework.modulith:spring-modulith-starter-jpa:1.4.3")
 	compileOnly("org.projectlombok:lombok")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -46,6 +51,9 @@ dependencies {
 	testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("com.h2database:h2")
+    testImplementation("org.springframework.modulith:spring-modulith-starter-test:1.4.3")
+    testImplementation("org.springframework.modulith:spring-modulith-junit:1.4.3")
 }
 
 dependencyManagement {
@@ -55,6 +63,8 @@ dependencyManagement {
 }
 
 contracts {
+	testMode.set(org.springframework.cloud.contract.verifier.config.TestMode.MOCKMVC)
+	baseClassForTests.set("com.github.thisuserusername.restapi.contracts.ContractTestBase")
 }
 
 tasks.withType<Test> {

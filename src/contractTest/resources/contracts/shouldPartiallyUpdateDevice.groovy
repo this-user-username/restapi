@@ -6,7 +6,7 @@ Contract.make {
     description "should partially update an existing device"
     request {
         method "PATCH"
-        url "/api/v1/devices/1"
+        url "/api/v1/devices/2"
         headers {
             contentType applicationJson()
         }
@@ -20,13 +20,11 @@ Contract.make {
             contentType applicationJson()
         }
         body(
-            id: 1,
+            id: 2,
             name: "Partially Updated Device",
             brand: "Test Brand",
-            state: "AVAILABLE",
-            creationTime: anyDateTime(),
-            modificationTime: anyDateTime(),
-            version: anyPositiveInt()
+            state: "available",
+            creationTime: anyDateTime()
         )
     }
 }

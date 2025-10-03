@@ -6,7 +6,7 @@ Contract.make {
     description "should return devices by brand"
     request {
         method GET()
-        url "/api/v1/devices/brand/Test Brand"
+        url "/api/v1/devices?brand=Test Brand"
         headers {
             accept applicationJson()
         }
@@ -19,21 +19,17 @@ Contract.make {
         body([
             [
                 id: 1,
-                name: "Test Device 1",
+                name: "Test Device",
                 brand: "Test Brand",
-                state: "AVAILABLE",
-                creationTime: anyDateTime(),
-                modificationTime: anyDateTime(),
-                version: anyPositiveInt()
+                state: "available",
+                creationTime: anyDateTime()
             ],
             [
                 id: 3,
                 name: "Test Device 3",
                 brand: "Test Brand",
-                state: "INACTIVE",
-                creationTime: anyDateTime(),
-                modificationTime: anyDateTime(),
-                version: anyPositiveInt()
+                state: "inactive",
+                creationTime: anyDateTime()
             ]
         ])
     }

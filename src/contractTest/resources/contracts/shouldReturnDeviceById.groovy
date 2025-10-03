@@ -20,7 +20,7 @@ Contract.make {
             id: 1,
             name: "Test Device",
             brand: "Test Brand",
-            state: "AVAILABLE",
+            state: "available",
             creationTime: anyDateTime()
         )
     }

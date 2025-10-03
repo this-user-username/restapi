@@ -13,7 +13,7 @@ Contract.make {
         body(
             name: "New Device",
             brand: "Test Brand",
-            state: "AVAILABLE"
+            state: "available"
         )
     }
     response {
@@ -25,10 +25,8 @@ Contract.make {
             id: anyPositiveInt(),
             name: "New Device",
             brand: "Test Brand",
-            state: "AVAILABLE",
-            creationTime: anyDateTime(),
-            modificationTime: anyDateTime(),
-            version: anyPositiveInt()
+            state: "available",
+            creationTime: anyDateTime()
         )
     }
 }

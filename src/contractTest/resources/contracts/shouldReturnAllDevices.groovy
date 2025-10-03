@@ -19,21 +19,17 @@ Contract.make {
         body([
             [
                 id: 1,
-                name: "Test Device 1",
+                name: "Test Device",
                 brand: "Test Brand",
-                state: "AVAILABLE",
-                creationTime: anyDateTime(),
-                modificationTime: anyDateTime(),
-                version: anyPositiveInt()
+                state: "available",
+                creationTime: anyDateTime()
             ],
             [
                 id: 2,
                 name: "Test Device 2",
                 brand: "Another Brand",
-                state: "IN_USE",
-                creationTime: anyDateTime(),
-                modificationTime: anyDateTime(),
-                version: anyPositiveInt()
+                state: "in_use",
+                creationTime: anyDateTime()
             ]
         ])
     }
