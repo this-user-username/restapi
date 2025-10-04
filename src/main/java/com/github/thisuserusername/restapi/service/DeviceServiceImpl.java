@@ -57,7 +57,13 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         Device device = ex.get();
-        if (device.getState() == DeviceState.IN_USE) {
+        DeviceState newState = Optional.ofNullable(updatedDevice.getState())
+                .filter(Objects::nonNull)
+                .map(String::toUpperCase)
+                .map(DeviceState::valueOf)
+                .orElseGet(device::getState);
+
+        if (newState == DeviceState.IN_USE) {
             if (ObjectUtils.notEqual(device.getBrand(), ObjectUtils.firstNonNull(updatedDevice.getBrand(), device.getBrand()))) {
                 throw new IllegalArgumentException("Cannot update brand of device that is in use");
             }
@@ -68,10 +74,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         device.setName(ObjectUtils.firstNonNull(updatedDevice.getName(), device.getName()));
         device.setBrand(ObjectUtils.firstNonNull(updatedDevice.getBrand(), device.getBrand()));
-        DeviceState newState = Optional.ofNullable(updatedDevice.getState())
-                .filter(Objects::nonNull)
-                .map(DeviceState::valueOf)
-                .orElseGet(device::getState);
         device.setState(newState);
         deviceRepository.flush();
 

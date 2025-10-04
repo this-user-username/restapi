@@ -33,15 +33,15 @@ A Spring Boot REST API for managing device resources supporting CRUD operations,
 
 Each device has the following properties:
 
-| Field              | Type          | Description            | Constraints                            |
-|--------------------|---------------|------------------------|----------------------------------------|
-| `id`               | Long          | Unique identifier      | Auto-generated                         |
-| `name`             | String        | Device name            | Required, cannot be updated if in-use  |
-| `brand`            | String        | Device brand           | Required, cannot be updated if in-use  |
-| `state`            | Enum          | Device state           | Required (AVAILABLE, IN_USE, INACTIVE) |
-| `creationTime`     | LocalDateTime | Creation timestamp     | Auto-generated, immutable              |
-| `modificationTime` | LocalDateTime | Modification timestamp | Auto-generated                         |
-| `version`          | Long          | Entity version         | Auto-generated                         |
+| Field        | Type          | Description            | Constraints                            |
+|--------------|---------------|------------------------|----------------------------------------|
+| `id`         | Long          | Unique identifier      | Auto-generated                         |
+| `name`       | String        | Device name            | Required, cannot be updated if in-use  |
+| `brand`      | String        | Device brand           | Required, cannot be updated if in-use  |
+| `state`      | Enum          | Device state           | Required (AVAILABLE, IN_USE, INACTIVE) |
+| `createdOn`  | LocalDateTime | Creation timestamp     | Auto-generated, immutable              |
+| `modifiedOn` | LocalDateTime | Modification timestamp | Auto-generated                         |
+| `version`    | Long          | Entity version         | Auto-generated                         |
 
 ## HATEOAS Implementation
 

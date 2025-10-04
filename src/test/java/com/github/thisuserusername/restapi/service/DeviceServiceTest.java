@@ -169,6 +169,25 @@ class DeviceServiceTest {
     }
 
     @Test
+    void update_device_when_in_use_but_changing_state_should_update_successfully() {
+        // Given
+        DeviceDTO updatedDeviceDTO = DeviceDTO.builder()
+                .name("In Use Device")
+                .brand("Updated Brand")
+                .state(DeviceState.AVAILABLE.name())
+                .build();
+
+        when(deviceRepository.findById(2L)).thenReturn(Optional.of(inUseDevice));
+
+        // When
+        Device result = deviceService.updateDevice(2L, updatedDeviceDTO);
+
+        // Then
+        assertThat(result).isNotNull();
+        verify(deviceRepository).flush();
+    }
+
+    @Test
     void update_device_when_device_not_found_should_throw_exception() {
         // Given
         DeviceDTO updatedDeviceDTO = DeviceDTO.builder().build();

@@ -47,7 +47,6 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.18.0")
     implementation("net.java.dev.jna:jna-platform:5.0.0")
     implementation("com.google.guava:guava:32.0.1-android")
-    implementation("org.springframework.data:spring-data-envers")
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
     implementation("net.lbruun.springboot:preliquibase-spring-boot-starter:1.6.1")
 	implementation("org.liquibase:liquibase-core")
