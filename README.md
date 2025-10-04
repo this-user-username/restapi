@@ -302,9 +302,9 @@ docker run -d \
   --name restapi-app \
   -p 8080:8080 \
   -e SPRING_PROFILES_ACTIVE=prod \
-  -e DATABASE_URL=jdbc:postgresql://localhost:5432/restapi_prod \
-  -e DATABASE_USERNAME=restapi_user \
-  -e DATABASE_PASSWORD=restapi_password \
+  -e DATABASE_URL=jdbc:postgresql://<host>:5432/<db name> \
+  -e DATABASE_USERNAME=<user> \
+  -e DATABASE_PASSWORD=<password> \
   restapi:latest
 ```
 
