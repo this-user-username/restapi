@@ -79,7 +79,7 @@ public class DeviceController {
     @Valid
     public ResponseEntity<PagedModel<DeviceDTO>> getAllDevices(
             @RequestParam(required = false) String brand,
-            @Pattern(regexp = "available|in_use|inactve")
+            @Pattern(regexp = "available|in_use|inactive")
             @RequestParam(required = false) String state,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int size

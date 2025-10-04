@@ -87,7 +87,7 @@ curl -X POST http://localhost:8080/api/v1/devices \
   -d '{
     "name": "iPhone 15",
     "brand": "Apple",
-    "state": "AVAILABLE"
+    "state": "available"
   }'
 ```
 
@@ -190,7 +190,7 @@ curl http://localhost:8080/api/v1/devices?brand=Apple
 ```bash
 curl -X PATCH http://localhost:8080/api/v1/devices/1 \
   -H "Content-Type: application/json" \
-  -d '{"state": "IN_USE"}'
+  -d '{"state": "in_use"}'
 ```
 
 **Response (200 OK):**
@@ -230,7 +230,7 @@ curl -X PATCH http://localhost:8080/api/v1/devices/1 \
 
 2. **Start database dependencies**
    ```bash
-   docker-compose -f docker-compose.yml up -d
+   docker-compose -f docker-compose.dev.yml up -d
    ```
 
 3. **Run the application**
@@ -251,11 +251,6 @@ curl -X PATCH http://localhost:8080/api/v1/devices/1 \
 ./gradlew test
 ```
 
-#### Run Integration Tests
-```bash
-./gradlew test --tests "*IntegrationTest"
-```
-
 #### Run Contract Tests
 ```bash
 ./gradlew contractTest
@@ -266,12 +261,32 @@ curl -X PATCH http://localhost:8080/api/v1/devices/1 \
 ./gradlew check
 ```
 
+#### Generate Code Coverage Reports
+```bash
+# Run tests and generate jacoco coverage report
+./gradlew test jacocoTestReport
+
+# Or simply run tests (jacocoTestReport runs automatically)
+./gradlew test
+```
+
+**View Coverage Report:**
+- Open `build/jacocoHtml/index.html` in your browser
+- The report shows line and branch coverage for all classes
+- Detailed coverage is available for each package and class
+
 ## Docker Deployment
 
 ### Development Environment
 ```bash
 # Start only database dependencies
-docker-compose -f docker-compose.yml up -d
+docker-compose -f docker-compose.dev.yml up -d
+```
+
+### Prod-like Environment
+```bash
+# Start database with application
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ### Build and Run Custom Image
@@ -297,7 +312,7 @@ docker run -d \
 
 ### Profiles
 
-- **container**: Local run with containerised application with PostgreSQL DB in a docker container 
+- **prod**: Local run with containerised application with PostgreSQL DB in a docker container 
 - **local**: Local development with PostgreSQL DB in a docker container
 - **test**: Testing with H2 in-memory DB
 
@@ -335,7 +350,7 @@ curl -X PUT http://localhost:8080/api/v1/devices/1 \
   -d '{
     "name": "New Name",
     "brand": "Apple", 
-    "state": "IN_USE"
+    "state": "in_use"
   }'
 
 # This will fail - trying to delete in-use device

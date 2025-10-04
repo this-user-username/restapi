@@ -4,6 +4,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.springframework.cloud.contract") version "4.3.0"
 	id("org.asciidoctor.jvm.convert") version "3.3.2"
+    id("jacoco")
 }
 
 group = "com.github.thisuserusername"
@@ -24,6 +25,10 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+jacoco {
+    toolVersion = "0.8.13"
 }
 
 extra["snippetsDir"] = file("build/generated-snippets")
@@ -82,9 +87,22 @@ tasks.contractTest {
 
 tasks.test {
 	outputs.dir(project.extra["snippetsDir"]!!)
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
 }
 
 tasks.asciidoctor {
 	inputs.dir(project.extra["snippetsDir"]!!)
 	dependsOn(tasks.test)
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
 }
