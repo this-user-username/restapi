@@ -9,8 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +33,7 @@ class DeviceServiceTest {
 
     private Device testDevice;
     private Device inUseDevice;
+    private Device anotherDevice;
 
     @BeforeEach
     void setUp() {
@@ -46,6 +53,14 @@ class DeviceServiceTest {
                 .brand("Test Brand")
                 .state(DeviceState.IN_USE)
                 .createdOn(LocalDateTime.now().minusDays(1))
+                .build();
+
+        anotherDevice = Device.builder()
+                .id(3L)
+                .name("Another Device")
+                .brand("Another Brand")
+                .state(DeviceState.INACTIVE)
+                .createdOn(LocalDateTime.now().minusDays(2))
                 .build();
     }
 
@@ -199,5 +214,120 @@ class DeviceServiceTest {
         assertThatThrownBy(() -> deviceService.deleteDevice(1L))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Device with ID 1 does not exist");
+    }
+
+    @Test
+    void get_filtered_devices_as_page_when_no_filters_should_return_all_devices() {
+        // Given
+        DeviceFilter filter = DeviceFilter.builder().build();
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<Device> expectedPage = new PageImpl<>(Arrays.asList(testDevice, inUseDevice, anotherDevice));
+        
+        when(deviceRepository.findAll(any(Example.class), any(PageRequest.class))).thenReturn(expectedPage);
+
+        // When
+        Page<Device> result = deviceService.getFilteredDevicesAsPage(filter, 0, 10);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(3);
+        assertThat(result.getContent()).containsExactly(testDevice, inUseDevice, anotherDevice);
+        verify(deviceRepository).findAll(any(Example.class), eq(pageRequest));
+    }
+
+    @Test
+    void get_filtered_devices_as_page_when_brand_filter_should_return_filtered_devices() {
+        // Given
+        DeviceFilter filter = DeviceFilter.builder().brand("Test Brand").build();
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<Device> expectedPage = new PageImpl<>(Arrays.asList(testDevice, inUseDevice));
+        
+        when(deviceRepository.findAll(any(Example.class), any(PageRequest.class))).thenReturn(expectedPage);
+
+        // When
+        Page<Device> result = deviceService.getFilteredDevicesAsPage(filter, 0, 10);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent()).containsExactly(testDevice, inUseDevice);
+        verify(deviceRepository).findAll(any(Example.class), eq(pageRequest));
+    }
+
+    @Test
+    void get_filtered_devices_as_page_when_state_filter_should_return_filtered_devices() {
+        // Given
+        DeviceFilter filter = DeviceFilter.builder().state(DeviceState.AVAILABLE).build();
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<Device> expectedPage = new PageImpl<>(Collections.singletonList(testDevice));
+        
+        when(deviceRepository.findAll(any(Example.class), any(PageRequest.class))).thenReturn(expectedPage);
+
+        // When
+        Page<Device> result = deviceService.getFilteredDevicesAsPage(filter, 0, 10);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent()).containsExactly(testDevice);
+        verify(deviceRepository).findAll(any(Example.class), eq(pageRequest));
+    }
+
+    @Test
+    void get_filtered_devices_as_page_when_multiple_filters_should_return_filtered_devices() {
+        // Given
+        DeviceFilter filter = DeviceFilter.builder()
+                .brand("Test Brand")
+                .state(DeviceState.IN_USE)
+                .build();
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<Device> expectedPage = new PageImpl<>(Collections.singletonList(inUseDevice));
+        
+        when(deviceRepository.findAll(any(Example.class), any(PageRequest.class))).thenReturn(expectedPage);
+
+        // When
+        Page<Device> result = deviceService.getFilteredDevicesAsPage(filter, 0, 10);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent()).containsExactly(inUseDevice);
+        verify(deviceRepository).findAll(any(Example.class), eq(pageRequest));
+    }
+
+    @Test
+    void get_filtered_devices_as_page_when_custom_pagination_should_use_correct_page_request() {
+        // Given
+        DeviceFilter filter = DeviceFilter.builder().build();
+        PageRequest pageRequest = PageRequest.of(1, 5);
+        Page<Device> expectedPage = new PageImpl<>(Collections.singletonList(anotherDevice));
+        
+        when(deviceRepository.findAll(any(Example.class), any(PageRequest.class))).thenReturn(expectedPage);
+
+        // When
+        Page<Device> result = deviceService.getFilteredDevicesAsPage(filter, 1, 5);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(1);
+        verify(deviceRepository).findAll(any(Example.class), eq(pageRequest));
+    }
+
+    @Test
+    void get_filtered_devices_as_page_when_no_matches_should_return_empty_page() {
+        // Given
+        DeviceFilter filter = DeviceFilter.builder().brand("Nonexistent Brand").build();
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<Device> expectedPage = new PageImpl<>(Collections.emptyList());
+        
+        when(deviceRepository.findAll(any(Example.class), any(PageRequest.class))).thenReturn(expectedPage);
+
+        // When
+        Page<Device> result = deviceService.getFilteredDevicesAsPage(filter, 0, 10);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).isEmpty();
+        verify(deviceRepository).findAll(any(Example.class), eq(pageRequest));
     }
 }

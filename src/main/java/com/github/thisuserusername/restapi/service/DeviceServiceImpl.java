@@ -8,9 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -18,6 +20,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(transactionManager = "transactionManager")
 public class DeviceServiceImpl implements DeviceService {
 
     private final DeviceRepository deviceRepository;
@@ -31,13 +34,19 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Device> getDeviceById(long id) {
         return deviceRepository.findById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Device> getFilteredDevicesAsPage(DeviceFilter filter, int page, int size) {
-        return deviceRepository.findByBrandIgnoreCaseAndState(filter.brand(), filter.state(), PageRequest.of(page, size));
+        Device.DeviceBuilder deviceBuilder = Device.builder();
+        Optional.ofNullable(filter.brand()).ifPresent(deviceBuilder::brand);
+        Optional.ofNullable(filter.state()).ifPresent(deviceBuilder::state);
+
+        return deviceRepository.findAll(Example.of(deviceBuilder.build()), PageRequest.of(page, size));
     }
 
     @Override

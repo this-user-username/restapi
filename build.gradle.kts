@@ -59,8 +59,6 @@ dependencies {
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("com.h2database:h2")
-    testImplementation("org.springframework.modulith:spring-modulith-starter-test:1.4.3")
-    testImplementation("org.springframework.modulith:spring-modulith-junit:1.4.3")
 }
 
 dependencyManagement {
