@@ -34,7 +34,14 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13") {
+        exclude("org.apache.commons", "commons-lang3")
+        exclude("net.java.dev.jna", "jna-platform")
+        exclude("com.google.guava", "guava")
+    }
+    implementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("net.java.dev.jna:jna-platform:5.0.0")
+    implementation("com.google.guava:guava:32.0.1-android")
     implementation("org.springframework.data:spring-data-envers")
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
     implementation("net.lbruun.springboot:preliquibase-spring-boot-starter:1.6.1")
