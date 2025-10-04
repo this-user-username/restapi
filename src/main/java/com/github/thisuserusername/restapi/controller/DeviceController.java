@@ -2,6 +2,7 @@ package com.github.thisuserusername.restapi.controller;
 
 import com.github.thisuserusername.restapi.dto.DeviceDTO;
 import com.github.thisuserusername.restapi.model.Device;
+import com.github.thisuserusername.restapi.model.DeviceState;
 import com.github.thisuserusername.restapi.service.DeviceFilter;
 import com.github.thisuserusername.restapi.service.DeviceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,9 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -24,6 +25,8 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 /**
  * REST controller for device management operations.
@@ -62,7 +65,7 @@ public class DeviceController {
     @GetMapping("/{id}")
     public ResponseEntity<DeviceDTO> getDevice(
             @Parameter(description = "Device ID") @PathVariable Long id) {
-        LOG.debug("REST request to get device: {}", id);
+        LOG.debug("Request to get device: {}", id);
         return deviceService.getDeviceById(id)
                 .map(device -> ResponseEntity.ok().body(deviceModelAssembler.toModel(device)))
                 .orElse(ResponseEntity.notFound().build());
@@ -76,14 +79,18 @@ public class DeviceController {
     @Valid
     public ResponseEntity<PagedModel<DeviceDTO>> getAllDevices(
             @RequestParam(required = false) String brand,
+            @Pattern(regexp = "available|in_use|inactve")
             @RequestParam(required = false) String state,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int size
     ) {
-        LOG.info("REST request to get devices list page with filters {}, {}, {}, {}", brand, state, page, size);
+        LOG.debug("Request to get devices list page with filters {}, {}, {}, {}", brand, state, page, size);
         Page<Device> devices = deviceService.getFilteredDevicesAsPage(DeviceFilter.builder()
                 .brand(StringUtils.trimToNull(brand))
-                .state(StringUtils.trimToNull(state))
+                .state(Optional.ofNullable(StringUtils.trimToNull(state))
+                        .map(String::toUpperCase)
+                        .map(DeviceState::valueOf)
+                        .orElse(null))
                 .build(), page, size);
         return ResponseEntity.ok(assembler.toModel(devices, deviceModelAssembler));
     }
@@ -114,7 +121,7 @@ public class DeviceController {
     public ResponseEntity<DeviceDTO> patchDevice(
             @Min(1) @Parameter(description = "Device ID") @PathVariable Long id,
             @RequestBody DeviceDTO updates) {
-        LOG.info("REST request to patch device: {}", id);
+        LOG.debug("Request to patch device: {}", id);
         return ResponseEntity.ok(deviceModelAssembler.toModel(deviceService.updateDevice(id, updates)));
     }
 
@@ -127,7 +134,7 @@ public class DeviceController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDevice(
             @Min(1) @Parameter(description = "Device ID") @PathVariable Long id) {
-        LOG.info("REST request to delete device: {}", id);
+        LOG.debug("Request to delete device: {}", id);
         deviceService.deleteDevice(id);
         return ResponseEntity.noContent().build();
     }

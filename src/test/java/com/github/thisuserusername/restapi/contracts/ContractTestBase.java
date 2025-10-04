@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -138,7 +137,7 @@ public abstract class ContractTestBase {
                 .thenReturn(new PageImpl<>(List.of(testDevice, testDevice3)));
 
         // Mock for getting devices by state
-        when(deviceService.getFilteredDevicesAsPage(eq(DeviceFilter.builder().state("available").build()), eq(0), eq(100)))
+        when(deviceService.getFilteredDevicesAsPage(eq(DeviceFilter.builder().state(DeviceState.AVAILABLE).build()), eq(0), eq(100)))
                 .thenReturn(new PageImpl<>(List.of(testDevice, testDevice4)));
 
         // Mock for deleting device
