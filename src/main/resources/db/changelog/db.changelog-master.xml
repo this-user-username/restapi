@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <property name="schema" value="restapi"/>
+
+    <changeSet id="schema" author="dev">
+        <sql>CREATE SCHEMA IF NOT EXISTS ${schema}</sql>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="001-create-device-table" author="dev" dbms="h2,postgresql">
+        <createTable tableName="devices" schemaName="${schema}">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="brand" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_on" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="devices" schemaName="${schema}"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="001-add-device-state-constraint" author="dev">
+        <sql>
+            ALTER TABLE ${schema}.devices
+                ADD CONSTRAINT chk_device_state CHECK (state IN ('AVAILABLE', 'IN_USE', 'INACTIVE'))
+        </sql>
+
+        <rollback>
+            <sql>
+                ALTER TABLE ${schema}.devices DROP CONSTRAINT chk_device_state
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="002-populate-test-devices" author="dev" dbms="h2">
+        <sqlFile path="002-populate-test-devices.sql" relativeToChangelogFile="true"/>
+        <rollback/>
+    </changeSet>
+
+</databaseChangeLog>

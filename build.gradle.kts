@@ -4,6 +4,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.springframework.cloud.contract") version "4.3.0"
 	id("org.asciidoctor.jvm.convert") version "3.3.2"
+    id("jacoco")
 }
 
 group = "com.github.thisuserusername"
@@ -26,6 +27,10 @@ repositories {
 	mavenCentral()
 }
 
+jacoco {
+    toolVersion = "0.8.13"
+}
+
 extra["snippetsDir"] = file("build/generated-snippets")
 extra["springCloudVersion"] = "2025.0.0"
 
@@ -34,11 +39,22 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13") {
+        exclude("org.apache.commons", "commons-lang3")
+        exclude("net.java.dev.jna", "jna-platform")
+        exclude("com.google.guava", "guava")
+    }
+    implementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("net.java.dev.jna:jna-platform:5.0.0")
+    implementation("com.google.guava:guava:32.0.1-android")
+    implementation("org.springframework.boot:spring-boot-starter-hateoas")
+    implementation("net.lbruun.springboot:preliquibase-spring-boot-starter:1.6.1")
 	implementation("org.liquibase:liquibase-core")
+    implementation("org.springframework.modulith:spring-modulith-api:1.4.3")
+    implementation("org.springframework.modulith:spring-modulith-starter-jpa:1.4.3")
 	compileOnly("org.projectlombok:lombok")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -46,6 +62,7 @@ dependencies {
 	testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("com.h2database:h2")
 }
 
 dependencyManagement {
@@ -55,6 +72,8 @@ dependencyManagement {
 }
 
 contracts {
+	testMode.set(org.springframework.cloud.contract.verifier.config.TestMode.MOCKMVC)
+	baseClassForTests.set("com.github.thisuserusername.restapi.contracts.ContractTestBase")
 }
 
 tasks.withType<Test> {
@@ -67,9 +86,22 @@ tasks.contractTest {
 
 tasks.test {
 	outputs.dir(project.extra["snippetsDir"]!!)
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
 }
 
 tasks.asciidoctor {
 	inputs.dir(project.extra["snippetsDir"]!!)
 	dependsOn(tasks.test)
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
 }

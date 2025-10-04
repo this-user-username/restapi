@@ -1,0 +1,45 @@
+version: '3.8'
+
+# Development environment - only database dependencies
+services:
+  # PostgreSQL Database for local development
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: restapi-postgres-dev
+    environment:
+      POSTGRES_DB: restapi_dev
+      POSTGRES_USER: restapi_user
+      POSTGRES_PASSWORD: restapi_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U restapi_user -d restapi_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - restapi-dev-network
+
+  # pgAdmin for database management
+  pgadmin-dev:
+    image: dpage/pgadmin4:latest
+    container_name: restapi-pgadmin-dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@restapi.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres-dev
+    networks:
+      - restapi-dev-network
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  restapi-dev-network:
+    driver: bridge

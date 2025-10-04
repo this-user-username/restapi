@@ -1,0 +1,63 @@
+### Create a new device
+POST http://localhost:8080/api/v1/devices
+Content-Type: application/json
+
+{
+  "name": "New Device",
+  "brand": "Test Brand",
+  "state": "available"
+}
+
+###
+
+### Delete a device
+DELETE http://localhost:8080/api/v1/devices/1
+
+###
+
+### Fully update a device
+PUT http://localhost:8080/api/v1/devices/2
+Content-Type: application/json
+
+{
+  "name": "Updated Device",
+  "brand": "Updated Brand",
+  "state": "in_use"
+}
+
+###
+
+### Partially update a device
+PATCH http://localhost:8080/api/v1/devices/2
+Content-Type: application/json
+
+{
+  "state": "available",
+  "name": "Partially Updated Device"
+}
+
+###
+
+### Get all devices
+GET http://localhost:8080/api/v1/devices?page=0&size=100
+Accept: application/json
+
+###
+
+### Get device by ID
+GET http://localhost:8080/api/v1/devices/2
+Accept: application/json
+
+###
+
+### Get devices by brand
+GET http://localhost:8080/api/v1/devices?brand=Updated Brand
+Accept: application/json
+
+###
+
+### Get devices by state
+GET http://localhost:8080/api/v1/devices?state=available
+Accept: application/json
+
+###
