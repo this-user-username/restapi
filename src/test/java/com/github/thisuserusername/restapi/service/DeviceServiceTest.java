@@ -169,7 +169,7 @@ class DeviceServiceTest {
     }
 
     @Test
-    void update_device_when_in_use_but_changing_state_should_update_successfully() {
+    void update_device_when_in_use_and_changing_state_should_throw_exception() {
         // Given
         DeviceDTO updatedDeviceDTO = DeviceDTO.builder()
                 .name("In Use Device")
@@ -179,12 +179,10 @@ class DeviceServiceTest {
 
         when(deviceRepository.findById(2L)).thenReturn(Optional.of(inUseDevice));
 
-        // When
-        Device result = deviceService.updateDevice(2L, updatedDeviceDTO);
-
-        // Then
-        assertThat(result).isNotNull();
-        verify(deviceRepository).flush();
+        // When & Then
+        assertThatThrownBy(() -> deviceService.updateDevice(2L, updatedDeviceDTO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Cannot update brand of device that is in use");
     }
 
     @Test
