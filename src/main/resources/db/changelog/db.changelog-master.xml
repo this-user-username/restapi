@@ -39,7 +39,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="001-add-device-state-constraint" author="dev">
+    <changeSet id="001-add-device-state-constraint" author="dev" dbms="h2,postgresql">
         <sql>
             ALTER TABLE ${schema}.devices
                 ADD CONSTRAINT chk_device_state CHECK (state IN ('AVAILABLE', 'IN_USE', 'INACTIVE'))
@@ -55,6 +55,19 @@
     <changeSet id="002-populate-test-devices" author="dev" dbms="h2">
         <sqlFile path="002-populate-test-devices.sql" relativeToChangelogFile="true"/>
         <rollback/>
+    </changeSet>
+
+    <changeSet id="003-add-indexes-for-filtering" author="dev" dbms="h2,postgresql">
+        <createIndex tableName="devices" indexName="devices_brand_idx" schemaName="${schema}">
+            <column name="brand"/>
+        </createIndex>
+        <createIndex tableName="devices" indexName="devices_state_idx" schemaName="${schema}">
+            <column name="state"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="devices" indexName="devices_brand_idx" schemaName="${schema}"/>
+            <dropIndex tableName="devices" indexName="devices_state_idx" schemaName="${schema}"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>
