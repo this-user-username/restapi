@@ -50,8 +50,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
     implementation("net.lbruun.springboot:preliquibase-spring-boot-starter:1.6.1")
 	implementation("org.liquibase:liquibase-core")
-    implementation("org.springframework.modulith:spring-modulith-api:1.4.3")
-    implementation("org.springframework.modulith:spring-modulith-starter-jpa:1.4.3")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
